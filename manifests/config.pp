@@ -27,11 +27,14 @@
 #     ensure => 'blank',
 #   }
 #
-define postfix::config ($value = undef, $ensure = 'present') {
+define postfix::config (
+  $ensure = 'present',
+  $value  = undef,
+) {
 
-  validate_string($ensure)
-  validate_re($ensure, ['present', 'absent', 'blank'],
+  validate_re($ensure, '^(present|absent|blank)$',
     "\$ensure must be either 'present', 'absent' or 'blank', got '${ensure}'")
+
   if ($ensure == 'present') {
     validate_string($value)
     validate_re($value, '^.+$',
@@ -42,28 +45,35 @@ define postfix::config ($value = undef, $ensure = 'present') {
     fail 'You must define class postfix before using postfix::config!'
   }
 
-  Augeas {
-    incl    => '/etc/postfix/main.cf',
-    lens    => 'Postfix_Main.lns',
-    require => File['/etc/postfix/main.cf'],
-  }
-
   case $ensure {
     present: {
       augeas { "set postfix '${name}' to '${value}'":
         changes => "set ${name} '${value}'",
+        incl    => '/etc/postfix/main.cf',
+        lens    => 'Postfix_Main.lns',
+        require => Package['postfix'],
+        notify  => Service['postfix'],
       }
     }
     absent: {
       augeas { "rm postfix '${name}'":
         changes => "rm ${name}",
+        incl    => '/etc/postfix/main.cf',
+        lens    => 'Postfix_Main.lns',
+        require => Package['postfix'],
+        notify  => Service['postfix'],
       }
     }
     blank: {
       augeas { "blank postfix '${name}'":
         changes => "clear ${name}",
+        incl    => '/etc/postfix/main.cf',
+        lens    => 'Postfix_Main.lns',
+        require => Package['postfix'],
+        notify  => Service['postfix'],
       }
     }
-    default: {}
+    default: {}     # satisfy stupid linter.
   }
+
 }

@@ -24,9 +24,9 @@
 #   }
 #
 define postfix::hash (
-  $ensure='present',
-  $source=undef,
-  $content=undef,
+  $ensure  = 'present',
+  $source  = undef,
+  $content = undef,
 ) {
   include ::postfix::params
 
