@@ -72,8 +72,16 @@ define postfix::service (
     fail("${def}: you must pass \$command for \$ensure=>'present'.")
   }
 
+  if is_array($command) {
+    $use_command = inline_template('<%=
+      "#{@command.shift}\n  #{@command.join("\n  ")}"
+    %>')
+  } else {
+    $use_command = $command
+  }
+
   if $ensure == 'present' {
-    augeas { "${title}_add":
+    augeas { "postfix_mastercf_${title}_add":
       context => '/files/etc/postfix/master.cf',
       changes => [
         "defnode mynode /files/etc/postfix/master.cf/${service}[type = '${type}'] ''",
@@ -83,12 +91,12 @@ define postfix::service (
         "set \$mynode/chroot '${chroot}'",
         "set \$mynode/wakeup '${wakeup}'",
         "set \$mynode/limit '${maxproc}'",
-        "set \$mynode/command '${command}'",
+        "set \$mynode/command '${use_command}'",
       ],
       notify  => Service['postfix'],
     }
   } else {
-    augeas { "${title}_remove":
+    augeas { "postfix_mastercf_${title}_remove":
       context => '/files/etc/postfix/master.cf',
       changes => "rm ${service}[type='${type}']",
       notify  => Service['postfix'],
