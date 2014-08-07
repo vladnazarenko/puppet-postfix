@@ -83,6 +83,7 @@ define postfix::service (
   if $ensure == 'present' {
     augeas { "postfix_mastercf_${title}_add":
       context => '/files/etc/postfix/master.cf',
+      lens    => 'Postfix_Master.lns',
       changes => [
         "defnode mynode /files/etc/postfix/master.cf/${service}[type = '${type}'] ''",
         "set \$mynode/type '${type}'",
@@ -98,6 +99,7 @@ define postfix::service (
   } else {
     augeas { "postfix_mastercf_${title}_remove":
       context => '/files/etc/postfix/master.cf',
+      lens    => 'Postfix_Master.lns',
       changes => "rm ${service}[type='${type}']",
       notify  => Service['postfix'],
     }
