@@ -2,5 +2,8 @@ fixtures:
   repositories:
     "augeas": "https://github.com/camptocamp/puppet-augeas.git"
     "stdlib": "https://github.com/puppetlabs/puppetlabs-stdlib.git"
+    "concat":
+        "repo": "https://github.com/flypenguin/puppetlabs-concat.git"
+        "ref":  mods
   symlinks:
     "postfix": "#{source_dir}"
