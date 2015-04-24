@@ -14,6 +14,7 @@ class postfix::prepare_hard_config_management {
     warn    => true,
     replace => true,
     backup  => false,
+    notify  => Service['postfix'],
   }
 
   concat::fragment { 'postfix master.cf header':
